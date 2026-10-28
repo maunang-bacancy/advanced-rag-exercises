@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report Q&amp;A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EDF0F3;
+    --card: #FFFFFF;
+    --ink: #18202B;
+    --muted: #5E6A7A;
+    --rule: #D3D9E0;
+    --stamp: #2D47A0;
+    --stamp-soft: #E3E8F6;
+    --marker: #F5D547;
+    --marker-soft: rgba(245, 213, 71, .42);
+    --error: #A33A2C;
+    --serif: "Spectral", Georgia, serif;
+    --sans: "Archivo", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #12161C; --card: #1A2028; --ink: #E6EAF0; --muted: #93A0B2;
+      --rule: #2A323D; --stamp: #8EA6F0; --stamp-soft: #222C40;
+      --marker: #E5C43C; --marker-soft: rgba(229, 196, 60, .28); --error: #F08A7A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #12161C; --card: #1A2028; --ink: #E6EAF0; --muted: #93A0B2;
+    --rule: #2A323D; --stamp: #8EA6F0; --stamp-soft: #222C40;
+    --marker: #E5C43C; --marker-soft: rgba(229, 196, 60, .28); --error: #F08A7A;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.5 var(--sans);
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 24px 64px; }
+
+  /* header */
+  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+  .top h1 { font: 600 26px/1.1 var(--serif); margin: 0; letter-spacing: -.01em; }
+  .top p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  /* report picker */
+  .reports { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+  .report {
+    text-align: left; background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 14px 16px 14px 18px; cursor: pointer; position: relative; transition: border-color .15s;
+    display: flex; flex-direction: column; justify-content: flex-start;
+  }
+  .report:hover { border-color: var(--muted); }
+  .report[aria-pressed="true"] { border-color: var(--stamp); box-shadow: inset 4px 0 0 var(--stamp); }
+  .report .task { font: 500 11px var(--mono); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .report .name { font: 600 16px/1.25 var(--serif); margin: 4px 0 2px; }
+  .report .by { font-size: 12.5px; color: var(--muted); }
+  .report .facts { display: flex; gap: 8px; margin-top: 10px; font-size: 12px; }
+  .report .facts span { background: var(--paper); border-radius: 4px; padding: 2px 7px; }
+  .report .challenge { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+  /* ask bar */
+  .ask { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; }
+  .ask form { display: flex; gap: 10px; align-items: stretch; }
+  .ask textarea {
+    flex: 1; resize: none; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper);
+    padding: 11px 13px; min-height: 46px; font: 400 17px/1.4 var(--serif);
+  }
+  .ask textarea:focus-visible { outline: 2px solid var(--stamp); outline-offset: 0; }
+  .ask .go {
+    background: var(--stamp); color: var(--card); border: 0; border-radius: 8px; padding: 0 22px;
+    font-weight: 600; cursor: pointer;
+  }
+  .ask .go:disabled { opacity: .55; cursor: progress; }
+  .controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin-top: 12px; }
+  .label { font: 500 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+  .seg button + button { border-left: 1px solid var(--rule); }
+  .seg button[aria-pressed="true"] { background: var(--stamp-soft); color: var(--stamp); font-weight: 600; }
+  .strategy-desc { font-size: 12.5px; color: var(--muted); }
+  .samples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .samples button {
+    border: 1px dashed var(--rule); background: transparent; border-radius: 12px; padding: 4px 11px;
+    font-size: 12.5px; cursor: pointer; color: var(--muted); text-align: left;
+  }
+  .samples button:hover { color: var(--ink); border-color: var(--muted); border-style: solid; }
+
+  /* results */
+  .results { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 22px; margin-top: 22px; }
+  .panel-title { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 10px; }
+  .answer { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; align-self: start; position: sticky; top: 16px; }
+  .answer .q { font: italic 400 18px/1.4 var(--serif); color: var(--muted); margin: 0 0 14px; }
+  .answer .a { font: 400 18px/1.62 var(--serif); }
+  .answer .a p { margin: 0 0 .7em; }
+  .answer .a ul { margin: 0 0 .7em; padding-left: 1.2em; }
+  .answer .a strong { font-weight: 600; }
+  .answer .refusal { color: var(--muted); font-style: italic; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); }
+  .chip { font: 12px var(--mono); background: var(--paper); border-radius: 4px; padding: 2px 8px; color: var(--muted); }
+  .chip.filter { background: var(--stamp-soft); color: var(--stamp); }
+  .cite {
+    font: 600 11.5px var(--mono); color: var(--stamp); background: var(--stamp-soft); border: 0;
+    border-radius: 4px; padding: 0 5px; margin: 0 1px; cursor: pointer; vertical-align: 2px;
+  }
+  .empty, .error { color: var(--muted); font: 400 17px/1.55 var(--serif); }
+  .error { color: var(--error); }
+  .working { display: flex; align-items: center; gap: 10px; color: var(--muted); }
+  .working i { width: 14px; height: 14px; border: 2px solid var(--rule); border-top-color: var(--stamp); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* passages */
+  .passages { display: flex; flex-direction: column; gap: 10px; }
+  .passage { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; scroll-margin: 16px; }
+  .passage header { display: flex; gap: 8px; align-items: flex-start; }
+  .passage .n { font: 600 12px var(--mono); color: var(--stamp); background: var(--stamp-soft); border-radius: 4px; padding: 1px 6px; flex: none; }
+  .passage .where {
+    flex: 1; font: 12px/1.45 var(--mono); color: var(--muted);
+    /* the highlighter: swept across on citation hover */
+    background-image: linear-gradient(var(--marker-soft), var(--marker-soft));
+    background-repeat: no-repeat; background-size: 0% 100%; transition: background-size .35s ease;
+    border-radius: 2px;
+  }
+  .passage.lit .where { background-size: 100% 100%; color: var(--ink); }
+  .passage.lit { border-color: var(--marker); }
+  .passage .where b { color: var(--ink); font-weight: 500; }
+  .passage .kind { font: 11px var(--mono); text-transform: uppercase; letter-spacing: .04em; border: 1px solid var(--rule); border-radius: 4px; padding: 0 5px; color: var(--muted); flex: none; }
+  .passage .kind.vision { border-color: var(--marker); }
+  .passage .body { font: 400 14.5px/1.55 var(--serif); margin-top: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .passage.table .body { font: 12.5px/1.55 var(--mono); }
+  .passage .body.clip { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+  .passage footer { display: flex; gap: 12px; align-items: center; margin-top: 8px; font-size: 12.5px; }
+  .linkish { border: 0; background: none; padding: 0; color: var(--stamp); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: 12.5px; }
+  .score { margin-left: auto; font: 11.5px var(--mono); color: var(--muted); }
+
+  /* page viewer */
+  dialog { border: 0; padding: 0; border-radius: 12px; background: var(--card); color: var(--ink); max-width: min(760px, 94vw); width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  dialog::backdrop { background: rgba(18, 22, 28, .55); }
+  .viewer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  .viewer-bar strong { font: 600 15px var(--serif); flex: 1; }
+  .viewer-bar button { border: 1px solid var(--rule); background: var(--paper); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+  .viewer-img { max-height: 80vh; overflow: auto; background: var(--paper); }
+  .viewer-img img { display: block; width: 100%; height: auto; }
+
+  @media (max-width: 900px) {
+    .reports { grid-template-columns: 1fr; }
+    .results { grid-template-columns: 1fr; }
+    .answer { position: static; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 18px 16px 48px; }
+    .top { flex-direction: column; align-items: stretch; gap: 4px; }
+    .ask form { flex-direction: column; }
+    .ask .go { padding: 11px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Ask the reports</h1>
+    <p>Answers come only from the report. Each one cites the passages it used.</p>
+  </div>
+
+  <div class="reports" id="reports" role="group" aria-label="Choose a report"></div>
+
+  <section class="ask">
+    <form id="ask-form">
+      <label for="question" class="visually-hidden" hidden>Question</label>
+      <textarea id="question" rows="1" placeholder="Ask a question about this report" aria-label="Question"></textarea>
+      <button class="go" id="go" type="submit">Ask</button>
+    </form>
+    <div class="controls">
+      <span class="label">Retrieval</span>
+      <div class="seg" id="strategies" role="group" aria-label="Retrieval method"></div>
+      <span class="strategy-desc" id="strategy-desc"></span>
+    </div>
+    <div class="samples" id="samples" aria-label="Sample questions"></div>
+  </section>
+
+  <div class="results">
+    <section>
+      <div class="panel-title"><span class="label">Answer</span></div>
+      <div class="answer" id="answer">
+        <p class="empty">Pick a report and ask a question, or try one of the sample questions. Click a page number to see the original page.</p>
+      </div>
+    </section>
+    <section>
+      <div class="panel-title"><span class="label">Passages given to the model</span><span class="label" id="count"></span></div>
+      <div class="passages" id="passages"></div>
+    </section>
+  </div>
+</div>
+
+<dialog id="viewer" aria-label="Report page">
+  <div class="viewer-bar">
+    <strong id="viewer-title"></strong>
+    <button id="prev" type="button" aria-label="Previous page">←</button>
+    <button id="next" type="button" aria-label="Next page">→</button>
+    <button id="close" type="button">Close</button>
+  </div>
+  <div class="viewer-img"><img id="viewer-img" alt=""></div>
+</dialog>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { docs: [], doc: null, strategy: null, viewer: null };
+
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function currentDoc() { return state.docs.find((d) => d.id === state.doc); }
+
+function renderReports() {
+  $("reports").innerHTML = state.docs.map((d) => `
+    <button class="report" type="button" data-doc="${d.id}" aria-pressed="${d.id === state.doc}">
+      <div class="task">Task ${d.task}</div>
+      <div class="name">${esc(d.title)}</div>
+      <div class="by">${esc(d.publisher)}</div>
+      <div class="facts"><span>${d.pages} pages</span><span>${esc(d.shape)}</span></div>
+      <div class="challenge">${esc(d.challenge)}</div>
+    </button>`).join("");
+}
+
+function renderControls() {
+  const d = currentDoc();
+  $("strategies").innerHTML = d.strategies.map((s) => `
+    <button type="button" data-strategy="${s.id}" aria-pressed="${s.id === state.strategy}">${esc(s.label)}</button>`).join("");
+  const s = d.strategies.find((x) => x.id === state.strategy);
+  $("strategy-desc").textContent = s ? s.desc : "";
+  $("samples").innerHTML = d.samples.map((q) => `<button type="button">${esc(q)}</button>`).join("");
+}
+
+function selectDoc(id) {
+  state.doc = id;
+  state.strategy = currentDoc().strategies[0].id;
+  renderReports();
+  renderControls();
+}
+
+// Answers come back as light markdown: **bold**, "* " bullets, [n] citations.
+function formatAnswer(text) {
+  const inline = (s) => esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\[(\d+)\]/g, '<button type="button" class="cite" data-n="$1" aria-label="Passage $1">$1</button>');
+  const out = [];
+  let list = [];
+  const flush = () => { if (list.length) { out.push(`<ul>${list.join("")}</ul>`); list = []; } };
+  for (const raw of text.split(/\n/)) {
+    const line = raw.trim();
+    if (!line) { flush(); continue; }
+    const bullet = line.match(/^[*\-•]\s+(.*)/);
+    if (bullet) list.push(`<li>${inline(bullet[1])}</li>`);
+    else { flush(); out.push(`<p>${inline(line)}</p>`); }
+  }
+  flush();
+  return out.join("");
+}
+
+function pathHtml(path) {
+  if (!path.length) return "";
+  return path.map((p, i) => i === path.length - 1 ? `<b>${esc(p)}</b>` : esc(p)).join(" › ");
+}
+
+function renderPassages(passages) {
+  $("count").textContent = passages.length ? `${passages.length}` : "";
+  $("passages").innerHTML = passages.map((p) => `
+    <article class="passage ${p.kind}" id="p${p.n}">
+      <header>
+        <span class="n">${p.n}</span>
+        <span class="where">${pathHtml(p.path) || (p.kind === "text" ? "Body text" : "")}</span>
+        <span class="kind ${p.kind}">${p.kind}</span>
+      </header>
+      <div class="body clip">${esc(p.text)}</div>
+      <footer>
+        ${p.pages.map((pg) => `<button type="button" class="linkish" data-page="${pg}">Page ${pg}</button>`).join("")}
+        <button type="button" class="linkish more">Show all</button>
+        <span class="score">similarity ${p.score.toFixed(3)}</span>
+      </footer>
+    </article>`).join("");
+}
+
+async function ask(question) {
+  question = question.trim();
+  if (!question) { $("question").focus(); return; }
+  $("question").value = question;
+  $("go").disabled = true;
+  $("answer").innerHTML = `<p class="q">${esc(question)}</p><div class="working"><i></i>Finding passages and writing the answer…</div>`;
+  renderPassages([]);
+  try {
+    const res = await fetch("/api/ask", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ doc: state.doc, question, strategy: state.strategy }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || `Request failed (${res.status}).`);
+    const refused = /could not find this in the document/i.test(data.answer);
+    const filters = Object.entries(data.filters || {}).map(([k, v]) =>
+      `<span class="chip filter">${esc(k.replace("_", " "))}${v === true ? "" : " = " + esc(String(v))}</span>`).join("");
+    $("answer").innerHTML = `
+      <p class="q">${esc(question)}</p>
+      <div class="a ${refused ? "refusal" : ""}">${formatAnswer(data.answer)}</div>
+      <div class="meta">
+        ${filters || (state.doc === "gep" && state.strategy === "structured" ? '<span class="chip">no filter</span>' : "")}
+        <span class="chip">${esc(data.model)}</span>
+        <span class="chip">${esc(currentDoc().strategies.find((s) => s.id === state.strategy).label)}</span>
+      </div>`;
+    renderPassages(data.passages);
+  } catch (err) {
+    $("answer").innerHTML = `<p class="q">${esc(question)}</p><p class="error">${esc(err.message)}</p>`;
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+function light(n, on) {
+  const el = $("p" + n);
+  if (el) el.classList.toggle("lit", on);
+}
+
+function openPage(page) {
+  const d = currentDoc();
+  state.viewer = { doc: d.id, page, max: d.pages };
+  showPage();
+  if (!$("viewer").open) $("viewer").showModal();
+}
+function showPage() {
+  const v = state.viewer;
+  const d = state.docs.find((x) => x.id === v.doc);
+  $("viewer-title").textContent = `${d.title}, page ${v.page} of ${v.max}`;
+  $("viewer-img").src = `/api/page/${v.doc}/${v.page}`;
+  $("viewer-img").alt = `Page ${v.page} of ${d.title}`;
+  $("prev").disabled = v.page <= 1;
+  $("next").disabled = v.page >= v.max;
+}
+
+// events
+$("reports").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-doc]");
+  if (b && b.dataset.doc !== state.doc) {
+    selectDoc(b.dataset.doc);
+    $("answer").innerHTML = `<p class="empty">Ask a question about the ${esc(currentDoc().title)}.</p>`;
+    renderPassages([]);
+  }
+});
+$("strategies").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-strategy]");
+  if (b) { state.strategy = b.dataset.strategy; renderControls(); }
+});
+$("samples").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b) ask(b.textContent);
+});
+$("ask-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("question").value); });
+$("question").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask($("question").value); }
+});
+$("answer").addEventListener("mouseover", (e) => { const c = e.target.closest(".cite"); if (c) light(c.dataset.n, true); });
+$("answer").addEventListener("mouseout", (e) => { const c = e.target.closest(".cite"); if (c) light(c.dataset.n, false); });
+$("answer").addEventListener("focusin", (e) => { const c = e.target.closest(".cite"); if (c) light(c.dataset.n, true); });
+$("answer").addEventListener("focusout", (e) => { const c = e.target.closest(".cite"); if (c) light(c.dataset.n, false); });
+$("answer").addEventListener("click", (e) => {
+  const c = e.target.closest(".cite");
+  if (!c) return;
+  const el = $("p" + c.dataset.n);
+  if (el) {
+    el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+    light(c.dataset.n, true);
+    setTimeout(() => light(c.dataset.n, false), 1400);
+  }
+});
+$("passages").addEventListener("click", (e) => {
+  const pg = e.target.closest("[data-page]");
+  if (pg) { openPage(Number(pg.dataset.page)); return; }
+  const more = e.target.closest(".more");
+  if (more) {
+    const body = more.closest(".passage").querySelector(".body");
+    const clipped = body.classList.toggle("clip");
+    more.textContent = clipped ? "Show all" : "Show less";
+  }
+});
+$("prev").addEventListener("click", () => { state.viewer.page--; showPage(); });
+$("next").addEventListener("click", () => { state.viewer.page++; showPage(); });
+$("close").addEventListener("click", () => $("viewer").close());
+$("viewer").addEventListener("click", (e) => { if (e.target === $("viewer")) $("viewer").close(); });
+
+fetch("/api/docs").then((r) => r.json()).then((docs) => {
+  state.docs = docs;
+  // Links like ?doc=gep&strategy=flat&q=... open a report and ask straight away.
+  const params = new URLSearchParams(location.search);
+  selectDoc(docs.some((d) => d.id === params.get("doc")) ? params.get("doc") : docs[0].id);
+  if (currentDoc().strategies.some((s) => s.id === params.get("strategy"))) {
+    state.strategy = params.get("strategy");
+    renderControls();
+  }
+  if (params.get("q")) ask(params.get("q"));
+}).catch(() => {
+  $("answer").innerHTML = '<p class="error">The server is not responding. Start it with: .venv\\Scripts\\python app\\server.py</p>';
+});
+</script>
+</body>
+</html>

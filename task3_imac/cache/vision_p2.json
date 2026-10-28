@@ -1,0 +1,5 @@
+{
+ "page": 2,
+ "model": "gemini-flash-lite-latest",
+ "text": "- A waterfall chart titled \"Progress toward carbon neutral\" shows the baseline emissions and emission reductions for an iMac (two ports) with 256GB.\n- The first bar, \"Baseline emissions7\", has a total value of 445 kg, composed of:\n  - \"Materials and process emissions\"\n  - \"Electricity for manufacturing\"\n  - \"Electricity for product use\"\n  - \"Transportation\"\n- An intermediate bar shows \"Emissions reductions\" of -99 kg, composed of:\n  - \"Recycled and low-carbon materials8\"\n  - \"Low-carbon electricity9\"\n  - \"Non-air shipping\"\n- The final bar shows \"iMac emissions10\" with a total value of 346 kg, composed of:\n  - \"Materials and process emissions\"\n  - \"Electricity for manufacturing\"\n  - \"Electricity for product use\"\n  - \"Transportation\"\n  - \"Renewable energy emissions11\" (represented as a very small sliver at the bottom)"
+}

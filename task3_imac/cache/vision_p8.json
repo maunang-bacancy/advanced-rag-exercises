@@ -1,0 +1,5 @@
+{
+ "page": 8,
+ "model": "gemini-flash-lite-latest",
+ "text": "- A circular lifecycle diagram with five green icons connected by arrows pointing clockwise:\n  - Top icon labeled \"DESIGN AND SOURCE\" with a recycling symbol inside a leaf outline.\n  - Right icon labeled \"MAKE\" with a solar panel symbol.\n  - Bottom-right icon labeled \"PACKAGE AND SHIP\" with a globe symbol.\n  - Bottom-left icon labeled \"USE\" with a plant symbol.\n  - Left icon labeled \"RECOVER\" with a plug and recycling symbol."
+}

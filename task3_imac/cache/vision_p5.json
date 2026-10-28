@@ -1,0 +1,5 @@
+{
+ "page": 5,
+ "model": "gemini-flash-lite-latest",
+ "text": "- A circular lifecycle diagram with five icons and labels:\n  - \"DESIGN AND SOURCE\" at the top with a recycling symbol icon\n  - \"MAKE\" on the right with a solar panel icon\n  - \"PACKAGE AND SHIP\" at the bottom right with a globe icon\n  - \"USE\" at the bottom left with a plant and plug icon\n  - \"RECOVER\" on the left with a flexed arm and leaf icon\n\n- Three illustrated sections at the bottom, each with a header, text, and an illustration:\n  - Header: \"Smarter chemicals\" with an illustration of four bottles and containers (including a spray bottle and a waste bin with a recycling symbol).\n  - Header: \"Zero Waste to Landfill\" with an illustration of a solar panel array.\n  - Header: \"Supplier energy use\" with an illustration of three wind turbines."
+}

@@ -1,0 +1,5 @@
+{
+ "page": 7,
+ "model": "gemini-flash-lite-latest",
+ "text": "- A circular lifecycle diagram with five steps, featuring icons and text labels:\n  - \"DESIGN AND SOURCE\" at the top with a recycling symbol icon.\n  - \"MAKE\" at the top right with a solar panel icon.\n  - \"PACKAGE AND SHIP\" at the bottom right with a globe icon.\n  - \"USE\" at the bottom left with a plug/plant icon, which is highlighted in green.\n  - \"RECOVER\" at the middle left with an arm/wrench icon."
+}
